@@ -14,7 +14,7 @@
       padding: 0;
       background-color: #e8f5e9; /* Light green background */
       color: #333;
-      transition: background-color 0.3s, color 0.3s;
+      transition: background-color 0.2s, color 0.2s;
     }
 
     .dark-mode {
@@ -23,9 +23,9 @@
     }
 
     .container {
-      width: 90%;
+      width: 80%;
       margin: 0 auto;
-      padding-top: 30px;
+      padding-top: 20px;
     }
 
     h1 {
@@ -39,23 +39,27 @@
       margin-bottom: 30px;
       max-width: 450px;
       margin: 0 auto;
+      background-color: rgba(255, 255, 255, 0.8); /* Add semi-transparent background to make text more readable */
+      padding: 20px;
+      border-radius: 8px;
     }
 
     .task-form input, .task-form textarea, .task-form select {
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 15px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
     }
 
     .task-form button {
-      padding: 20px;
+      padding: 15px;
       background-color: #4CAF50; /* Green background */
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      margin-bottom: 20px;
     }
 
     .task-form button:hover {
@@ -65,7 +69,7 @@
     .task-list {
       list-style: none;
       padding: 0;
-      max-width: 500px;
+      max-width: 400px;
       margin: 0 auto;
     }
 
@@ -84,7 +88,7 @@
       background-color: #e0e0e0;
     }
 
-    .task-item .delete-btn {
+    .task-item .delete-btn, .task-item .edit-btn {
       background-color: #4CAF50; /* Green background */
       color: white;
       border: none;
@@ -94,21 +98,7 @@
       transition: background-color 0.2s ease;
     }
 
-    .task-item .delete-btn:hover {
-      background-color: #45a049; /* Slightly darker green on hover */
-    }
-
-    .task-item .edit-btn {
-      background-color: #4CAF50; /* Green background */
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 5px 10px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .task-item .edit-btn:hover {
+    .task-item .delete-btn:hover, .task-item .edit-btn:hover {
       background-color: #45a049; /* Slightly darker green on hover */
     }
 
@@ -118,7 +108,7 @@
     }
 
     .filters button {
-      padding: 20px;
+      padding: 15px;
       margin: 5px;
       background-color: #4CAF50; /* Green background */
       color: white;
@@ -134,9 +124,9 @@
 
     .dark-mode-toggle {
       position: absolute;
-      top: 30px;
-      right: 30px;
-      padding: 20px;
+      top: 20px;
+      left: 20px;
+      padding: 15px;
       background-color: #4CAF50; /* Green background */
       color: white;
       border: none;
@@ -153,7 +143,7 @@
     .nav-buttons {
       display: flex;
       justify-content: center;
-      margin: 20px 0;
+      margin: 15px 0;
     }
 
     .nav-buttons button {
@@ -207,8 +197,8 @@
     <section id="taskManager">
       <div class="task-form">
         <input type="text" id="task-title" placeholder="Enter Task" required>
-        <textarea id="task-description" placeholder="Description"></textarea>
-        <input type="date" id="task-due-date" required>
+        <input type="date" id="task-due-date" required> 
+        <textarea id="task-description" placeholder="Task Details"></textarea>
         <select id="task-priority">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -218,9 +208,9 @@
       </div>
 
       <div class="filters">
-        <button onclick="filterTasks('all')">All Tasks</button>
         <button onclick="filterTasks('completed')">Completed</button>
         <button onclick="filterTasks('pending')">Pending</button>
+        <button onclick="filterTasks('all')">All Tasks</button>
       </div>
 
       <ul id="task-list" class="task-list"></ul>
@@ -231,6 +221,12 @@
   <script>
     function toggleDarkMode() {
       $('body').toggleClass('dark-mode');
+  
+      if ($('body').hasClass('dark-mode')) {
+          alert('Dark Mode is now ON');
+      } else {
+          alert('Dark Mode is now OFF');
+      }
     }
 
     // Task Management Functionality
@@ -272,7 +268,7 @@
       const dueDate = $('#task-due-date').val();
       const priority = $('#task-priority').val();
 
-      if (!title || !dueDate) return alert('Please provide task and due date');
+      if (!title || !dueDate) return alert('Enter the task title and select a due date.');
 
       const newTask = {
         title,
@@ -284,6 +280,10 @@
 
       tasks.push(newTask);
       renderTasks();
+
+      // Alert when a task is added
+      alert("Task '" + title + "' has been added!");
+
       clearForm();
     });
 
@@ -294,18 +294,33 @@
       $('#task-due-date').val(task.dueDate);
       $('#task-priority').val(task.priority);
 
+      // Alert when a task is edited
+      alert("Task '" + task.title + "' has been edited.");
+
       tasks.splice(index, 1);
       renderTasks();
     }
 
     function deleteTask(index) {
+      const task = tasks[index];
       tasks.splice(index, 1);
       renderTasks();
+
+      // Alert when a task is deleted
+      alert("Task '" + task.title + "' has been deleted.");
     }
 
     function toggleCompleted(index) {
       tasks[index].completed = !tasks[index].completed;
       renderTasks();
+
+      // Alert when a task is marked as complete
+      const task = tasks[index];
+      if (task.completed) {
+        alert("Task '" + task.title + "' is marked as complete!");
+      } else {
+        alert("Task '" + task.title + "' is marked as pending!");
+      }
     }
 
     function filterTasks(status) {
