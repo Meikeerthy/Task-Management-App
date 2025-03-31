@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management App</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e8f5e9; /* Light green background */
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background-color: #333;
+      color: #f0f4f8;
+    }
+
+    .container {
+      width: 90%;
+      margin: 0 auto;
+      padding-top: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50; /* Green text */
+    }
+
+    .task-form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 30px;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .task-form input, .task-form textarea, .task-form select {
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .task-form button {
+      padding: 20px;
+      background-color: #4CAF50; /* Green background */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .task-form button:hover {
+      background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: #fff;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-item.completed {
+      text-decoration: line-through;
+      background-color: #e0e0e0;
+    }
+
+    .task-item .delete-btn {
+      background-color: #4CAF50; /* Green background */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .task-item .delete-btn:hover {
+      background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    .task-item .edit-btn {
+      background-color: #4CAF50; /* Green background */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .task-item .edit-btn:hover {
+      background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    .filters {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filters button {
+      padding: 20px;
+      margin: 5px;
+      background-color: #4CAF50; /* Green background */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .filters button:hover {
+      background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    .dark-mode-toggle {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      padding: 20px;
+      background-color: #4CAF50; /* Green background */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .dark-mode-toggle:hover {
+      background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    /* Navigation buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .nav-buttons button {
+      padding: 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .nav-buttons button:hover {
+      background-color: #45a049;
+    }
+
+    /* Hide sections */
+    section {
+      display: none;
+    }
+
+    /* Show active section */
+    section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Task Manager</h1>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">Dark Mode</button>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+      <button onclick="navigateTo('home')">Home</button>
+      <button onclick="navigateTo('taskManager')">Task Manager</button>
+    </div>
+
+    <!-- Home Section -->
+    <section id="home" class="active">
+    <center>
+      <h2>Welcome to the Task Management App!</h2>
+      <p>This app helps you manage your tasks effectively.</p>
+      <p>Click on "Task Manager" to start managing your tasks.</p>
+    </center>
+    </section>
+
+    <!-- Task Manager Section -->
+    <section id="taskManager">
+      <div class="task-form">
+        <input type="text" id="task-title" placeholder="Enter Task" required>
+        <textarea id="task-description" placeholder="Description"></textarea>
+        <input type="date" id="task-due-date" required>
+        <select id="task-priority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+        <button id="add-task-btn">Add Task</button>
+      </div>
+
+      <div class="filters">
+        <button onclick="filterTasks('all')">All Tasks</button>
+        <button onclick="filterTasks('completed')">Completed</button>
+        <button onclick="filterTasks('pending')">Pending</button>
+      </div>
+
+      <ul id="task-list" class="task-list"></ul>
+    </section>
+
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      $('body').toggleClass('dark-mode');
+    }
+
+    // Task Management Functionality
+    let tasks = [];
+
+    function renderTasks(filter = 'all') {
+      const taskList = $('#task-list');
+      taskList.empty();
+
+      let filteredTasks = tasks;
+
+      if (filter === 'completed') {
+        filteredTasks = tasks.filter(task => task.completed);
+      } else if (filter === 'pending') {
+        filteredTasks = tasks.filter(task => !task.completed);
+      }
+
+      filteredTasks.forEach((task, index) => {
+        const taskItem = $(`
+          <li class="task-item ${task.completed ? 'completed' : ''}">
+            <div>
+              <strong>${task.title}</strong> - ${task.priority} - Due: ${task.dueDate}
+              <p>${task.description}</p>
+            </div>
+            <div>
+              <button class="edit-btn" onclick="editTask(${index})">Edit</button>
+              <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+              <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleCompleted(${index})">
+            </div>
+          </li>
+        `);
+        taskList.append(taskItem);
+      });
+    }
+
+    $('#add-task-btn').click(() => {
+      const title = $('#task-title').val();
+      const description = $('#task-description').val();
+      const dueDate = $('#task-due-date').val();
+      const priority = $('#task-priority').val();
+
+      if (!title || !dueDate) return alert('Please provide task and due date');
+
+      const newTask = {
+        title,
+        description,
+        dueDate,
+        priority,
+        completed: false
+      };
+
+      tasks.push(newTask);
+      renderTasks();
+      clearForm();
+    });
+
+    function editTask(index) {
+      const task = tasks[index];
+      $('#task-title').val(task.title);
+      $('#task-description').val(task.description);
+      $('#task-due-date').val(task.dueDate);
+      $('#task-priority').val(task.priority);
+
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    function toggleCompleted(index) {
+      tasks[index].completed = !tasks[index].completed;
+      renderTasks();
+    }
+
+    function filterTasks(status) {
+      renderTasks(status);
+    }
+
+    function clearForm() {
+      $('#task-title').val('');
+      $('#task-description').val('');
+      $('#task-due-date').val('');
+      $('#task-priority').val('Low');
+    }
+
+    // Navigation Functionality
+    function navigateTo(sectionId) {
+      $('section').removeClass('active');
+      $('#' + sectionId).addClass('active');
+    }
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
